@@ -1,0 +1,28 @@
+<div class="container mt-5">
+
+    @if(!registerMode)
+    {
+    <div class="text-center">
+        <h1 class="text-center">Find your perfect match</h1>
+        <p class="lead">By Register with us!</p>
+        <div class="text-center">
+            <button class="btn btn-primary me-2" (click)="register()">Register</button>
+            <button class="btn btn-info me-2" (click)="learnMore()">Learn More</button>
+        </div>
+    </div>
+    }
+    @else
+    {
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <app-register 
+                (cancelRegister)="cancelRegisterMode($event)"
+                >
+                </app-register>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>
