@@ -1,5 +1,6 @@
 using API.Extensions;
 using API.Interfaces;
+using API.Middlewares;
 using API.Models;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +16,8 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityService(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
