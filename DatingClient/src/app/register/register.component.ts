@@ -19,12 +19,10 @@ export class RegisterComponent {
   // using output()
   cancelRegister = output<boolean>();
   register() {
-    console.log(this.model);
     this.accountService.register(this.model).subscribe({
       next: _ => { this.routeService.navigateByUrl('/members'); },
       error: err => { console.log(err) }
-    }
-    );
+    });
   }
 
   cancel() {

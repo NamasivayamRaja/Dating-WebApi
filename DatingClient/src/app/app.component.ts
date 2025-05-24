@@ -10,7 +10,7 @@ import { HomeComponent } from "./home/home.component";
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgFor, NavbarComponent, HomeComponent],
+  imports: [RouterOutlet, NavbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
