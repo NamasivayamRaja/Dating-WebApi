@@ -1,40 +1,51 @@
-﻿using API.Models;
+﻿using API.DTOs;
+using API.Entities;
+using API.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    public class UserController : BaseController
+    [Authorize]
+    public class UserController(IUserRepository<AppUser> repository, IMapper mapper) : BaseController
     {
-        private readonly DataContext _dataContext;
 
-        public UserController(DataContext dataContext) 
-        {
-            _dataContext = dataContext;
-        }
-
-        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
         {
-            var users = await _dataContext.Users.ToListAsync();
+            var users = await repository.GetMemberAll();
 
             return Ok(users);
         }
 
-        [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetUser(int id)
+        public async Task<ActionResult<MemberDTO>> GetUserById(int id)
         {
-            var user = await _dataContext.Users.FindAsync(id);
+            var user = await repository.GetByIdAsync(id);
 
             if (user == null) 
             {
                 return NotFound();
             }
 
+            var userReturn = mapper.Map<MemberDTO>(user);
+
+            return Ok(userReturn);
+        }
+
+        [HttpGet("userName/{userName}")] // api/users/raja
+        public async Task<ActionResult<MemberDTO>> GetUserByName(string userName)
+        {
+            var user = await repository.GetMemberByUserNameAsync(userName);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             return Ok(user);
         }
+
     }
 }

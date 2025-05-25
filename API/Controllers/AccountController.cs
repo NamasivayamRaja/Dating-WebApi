@@ -1,6 +1,7 @@
-﻿using API.DTOs;
+﻿using API.Data;
+using API.DTOs;
+using API.Entities;
 using API.Interfaces;
-using API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,21 +20,22 @@ namespace API.Controllers
 
             using HMACSHA512 hmac = new HMACSHA512();
 
-            var user = new AppUser
-            {
-                UserName = registerDTO.UserName.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
-                PasswordSalt = hmac.Key
-            };
+            //var user = new AppUser
+            //{
+            //    UserName = registerDTO.UserName.ToLower(),
+            //    PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
+            //    PasswordSalt = hmac.Key
+            //};
 
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
+            //context.Users.Add(user);
+            //await context.SaveChangesAsync();
 
-            return new UserDTO
-            {
-                UserName = user.UserName,
-                Token = tokenService.CreateToken(user)
-            };
+            //return new UserDTO
+            //{
+            //    UserName = user.UserName,
+            //    Token = tokenService.CreateToken(user)
+            //};
+            return Ok();
         }
 
         [HttpPost]
