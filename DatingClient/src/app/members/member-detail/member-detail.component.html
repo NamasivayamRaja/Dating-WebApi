@@ -1,1 +1,69 @@
-<p>member-detail works!</p>
+@if(member)
+{
+<div class="row">
+    <div class="col-4">
+        <div class="card">
+            <img class="card-img-top" src="{{member.photoUrl || '../src/assets/user.png'}}" alt="{{member.knownAs}}">
+            <div class="card-body">
+                <div>
+                    <strong>Location:</strong>
+                    <p>{{member.city}}, {{member.country}}</p>
+                </div>
+                <div>
+                    <strong>Age:</strong>
+                    <p>{{member.age}}</p>
+                </div>
+                <div>
+                    <strong>Last active:</strong>
+                    <p>{{member.lastActive}}</p>
+                </div>
+                <div>
+                    <strong>Member since:</strong>
+                    <p>{{member.createdDateTime}}</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group d-flex">
+                    <button class="btn btn-primary">Like</button>
+                    <button class="btn btn-success">Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-8">
+        <tabset>
+            <tab heading="About {{member.knownAs}}">
+                <div>
+                    <h4 class="text-primary">Description</h4>
+                    <p>{{member.introduction}}</p>
+                </div>
+                <div>
+                    <h4 class="text-primary">Looking for</h4>
+                    <p>{{member.lookingFor}}</p>
+                </div>
+            </tab>
+            <tab heading="Interests">
+                <div>
+                    <h4 class="text-primary">Interests</h4>
+                    <p>{{member.interests}}</p>
+                </div>
+            </tab>
+            <tab heading="Photos">
+                <carousel [noPause]="false" [pauseOnFocus]="true" [isAnimated]="true" [(activeSlide)]="activeSlideIndex">
+                    @for(slide of member.photos; track $index)
+                    {
+                    <slide>
+                        <img [src]="slide.url" alt="image slide">
+
+                        <div class="carousel-caption">
+                            <h4></h4>
+                        </div>
+                    </slide>
+                    }
+                </carousel>
+            </tab>
+            <tab heading="Message">Message</tab>
+        </tabset>
+    </div>
+</div>
+}

@@ -24,7 +24,6 @@ export class AppComponent implements OnInit {
   //constructor(private httpClient: HttpClient){}
 
   ngOnInit(){
-    this.getUsers();
     this.setUser();
   }
 
@@ -36,13 +35,5 @@ export class AppComponent implements OnInit {
       this.accountService.currentUser.set(userp)
       this.routerService.navigateByUrl('/members');
     }
-  }
-
-  private getUsers() {
-    this.httpClient.get('https://localhost:7118/api/user').subscribe(
-      response => { this.users = response; },
-      error => { console.log(error); },
-      () => { console.log('Request Completed'); }
-    );
   }
 }
