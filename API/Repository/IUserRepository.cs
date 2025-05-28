@@ -9,5 +9,6 @@ namespace API.Repository
         Task<AppUser?> GetByUserNameAsync(string userName);
         Task<IEnumerable<MemberDTO>> GetMemberAll();
         Task<MemberDTO?> GetMemberByUserNameAsync(string userName);
+        Task<bool> SaveAllChangesAsync();
     }
 }

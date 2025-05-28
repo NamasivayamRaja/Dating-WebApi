@@ -61,5 +61,9 @@ namespace API.Repository
                 .FirstOrDefaultAsync(x => x.UserName == userName);
         }
 
+        public async Task<bool> SaveAllChangesAsync()
+        {
+            return await dataContext.SaveChangesAsync() > 0;
+        }
     }
 }
