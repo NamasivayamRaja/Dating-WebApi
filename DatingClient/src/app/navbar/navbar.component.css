@@ -1,0 +1,12 @@
+.user-image{
+ width: 40px; /* Adjust size */
+    height: 40px;
+    border-radius: 50%; /* Makes it circular */
+    object-fit: cover; /* Ensures proper scaling */
+    border: 2px solid #fff; /* Optional border */
+}
+
+.user-image:hover {
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.7); /* Blue glow */
+    transition: box-shadow 0.3s ease-in-out;
+}
