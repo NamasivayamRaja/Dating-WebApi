@@ -5,7 +5,7 @@
             <img src="{{photo.url}}" alt="Photo" class="img-thumbnail mb-1">
             <div class="btn-group btn-group-sm text-center">
                 <button (click)="SetMainPhoto(photo)" [disabled]="photo.isMain" class="btn btn-sm me-2" ngClass="{{photo.isMain ? 'btn-success active' : 'btn-outline-success'}}">Main</button>
-                <button (click)="DeletePhoto(photo)" [disabled]="photo.isMain" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                <button (click)="DeletePhoto(photo)" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
             </div>
         </div>
     }

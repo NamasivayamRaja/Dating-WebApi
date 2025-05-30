@@ -51,20 +51,24 @@ export class MemberService {
         })
       )})
     );
-  }
+  }  
   
   DeletePhoto(photo: Photo){
     return this.httpClient.delete(this.baseUrl+'user/delete-photo/'+ photo.id).pipe(
       tap(()=>{
-        this.members.update(
-          members => members.map(m=>{
-            if(m.photos.includes(photo))
-            {
-              m.photos = m.photos.filter(mp=> mp.id !== photo.id)
-            }
-            return m;
-          }));
+        this.RemovePhotoFromState(photo);
       })
     );
+  }
+
+
+  RemovePhotoFromState(photo: Photo) {
+    this.members.update(
+      members => members.map(m => {
+        if (m.photos.includes(photo)) {
+          m.photos = m.photos.filter(mp => mp.id !== photo.id)
+        }
+        return m;
+      }));
   }
 }

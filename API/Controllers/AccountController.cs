@@ -2,7 +2,9 @@
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -10,32 +12,37 @@ using System.Text;
 
 namespace API.Controllers
 {
-    public class AccountController(DataContext context, ITokenService tokenService) : BaseController
+    public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseController
     {
         [HttpPost]
         [Route("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO) 
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (await CheckUserNameExist(registerDTO.UserName)) { return BadRequest("User name already registered"); }
 
             using HMACSHA512 hmac = new HMACSHA512();
 
-            //var user = new AppUser
-            //{
-            //    UserName = registerDTO.UserName.ToLower(),
-            //    PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
-            //    PasswordSalt = hmac.Key
-            //};
+            var user = mapper.Map<AppUser>(registerDTO);
 
-            //context.Users.Add(user);
-            //await context.SaveChangesAsync();
+            user.UserName = registerDTO.UserName.ToLower();
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
+            user.PasswordSalt = hmac.Key;
 
-            //return new UserDTO
-            //{
-            //    UserName = user.UserName,
-            //    Token = tokenService.CreateToken(user)
-            //};
-            return Ok();
+            context.Users.Add(user);
+
+            await context.SaveChangesAsync();
+
+            return new UserDTO
+            {
+                UserName = user.UserName,
+                Token = tokenService.CreateToken(user),
+                KnownUs = user.KnownAs
+            };
         }
 
         [HttpPost]

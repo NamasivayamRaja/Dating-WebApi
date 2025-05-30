@@ -19,12 +19,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                   modelStateErrors.push(error.error.errors[err]);                  
                 }
               }
-              throw modelStateErrors.flat();
             }
             else {
+              modelStateErrors.push(error.error);
               toastservice.error(error.error, error.status)
             }
-            break;
+            throw modelStateErrors.flat();
           case 401:
             toastservice.error('Unauthorized', error.status);
             break;
@@ -32,6 +32,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             toastservice.error("Not found - Request element is not available in the server");
             break;
           case 500:
+            toastservice.error("Error occured.", "Server Error")            
             break;
           default:
             toastservice.error("Unknown error occured. Contact support");

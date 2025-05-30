@@ -5,6 +5,7 @@ import { TitleCasePipe } from '@angular/common';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccountService } from '../_services/account-service.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-navbar',
@@ -16,11 +17,12 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 export class NavbarComponent {
   accountService = inject(AccountService);
   private routerService =  inject(Router);
+  private toasterService = inject(ToastrService);
   model: any = {};
   login() {
     this.accountService.login(this.model).subscribe({
       next: _ => { this.routerService.navigateByUrl('/members') },
-      error: error => { console.log(error)}      
+      error: error => { this.toasterService.error(error)}      
     })
   }
 

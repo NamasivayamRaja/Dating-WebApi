@@ -44,11 +44,32 @@ export class PhotosEditComponent implements OnInit {
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials= false;
     } 
-    console.log(this.uploader?.isFile,'From File');
+
     this.uploader.onSuccessItem = (item, response, status, header) =>{
       const photo = JSON.parse(response);
       const updatedMember = {...this.member()};
       updatedMember.photos.push(photo);
+      if (updatedMember.photos.length === 1 && photo.isMain) {
+        const user = this.accountService.currentUser();
+        if (user) {
+          user.photoUrl = photo.url;
+          this.accountService.setCurrentUser(user)
+        }
+        updatedMember.photoUrl = photo.url;
+        updatedMember.photos.forEach(p => {
+          if (p.isMain)
+            p.isMain = false;
+          if (p.id === photo.id)
+            p.isMain = true;
+        });
+        this.memberService.members.update(members => members.map(m => {
+          if (m.userName == user?.userName && m.photos.length == 0) {
+            m.photos = [photo];
+            m.photoUrl = photo.url;
+          }
+          return m;
+        }));
+      }
       this.memberChange.emit(updatedMember);
     };
   }
@@ -94,6 +115,7 @@ export class PhotosEditComponent implements OnInit {
           const updateMember = {...this.member()};
           updateMember.photos = updateMember.photos.filter(p => p.id !== photo.id);
           this.memberChange.emit(updateMember);
+          this.memberService.RemovePhotoFromState(photo);
         },
         error: err => {
           this.toasterService.error(err, "Photo deletion failed");

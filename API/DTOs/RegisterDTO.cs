@@ -9,14 +9,15 @@ namespace API.DTOs
         public string UserName { get; set; } = string.Empty;
         [Required]
         public  string Password { get; set; } = string.Empty;
-        public DateOnly DateOfBirth { get; set; }
-        public required string KnownAs { get; set; }
-        public int Gender { get; set; }
-        public string? Introduction { get; set; }
-        public string? Interests { get; set; }
-        public int LookingFor { get; set; }
-        public required string City { get; set; }
-        public required string Country { get; set; }
-        public List<Photo> Photos { get; set; } = [];
+        [Required]
+        public string? DateOfBirth { get; set; }
+        [Required]
+        public string? KnownAs { get; set; }
+        [Required]
+        public string? Gender { get; set; }
+        [Required]
+        public string? City { get; set; }
+        [Required]
+        public string? Country { get; set; }
     }
 }

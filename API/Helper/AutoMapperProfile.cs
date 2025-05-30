@@ -1,5 +1,7 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Enums;
+using API.Extensions;
 using AutoMapper;
 
 namespace API.Helper
@@ -11,6 +13,9 @@ namespace API.Helper
                 .ForMember(d=> d.PhotoUrl, o=> o.MapFrom(s=> s.Photos.FirstOrDefault(x=>x.IsMain)!.Url));
             CreateMap<Photo, PhotoDTO>();
             CreateMap<MemberEditDTO, AppUser>();
+            CreateMap<string?, DateOnly>();
+            CreateMap<RegisterDTO, AppUser>()
+                .ForMember(g=>g.Gender, o=> o.MapFrom(src=> src.Gender.FromString<Gender>() ?? 0));
         }
     }
 }
