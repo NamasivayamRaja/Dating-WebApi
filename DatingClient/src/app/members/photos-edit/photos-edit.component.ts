@@ -62,13 +62,13 @@ export class PhotosEditComponent implements OnInit {
           if (p.id === photo.id)
             p.isMain = true;
         });
-        this.memberService.members.update(members => members.map(m => {
-          if (m.userName == user?.userName && m.photos.length == 0) {
-            m.photos = [photo];
-            m.photoUrl = photo.url;
-          }
-          return m;
-        }));
+        // this.memberService.members.update(members => members.map(m => {
+        //   if (m.userName == user?.userName && m.photos.length == 0) {
+        //     m.photos = [photo];
+        //     m.photoUrl = photo.url;
+        //   }
+        //   return m;
+        // }));
       }
       this.memberChange.emit(updatedMember);
     };

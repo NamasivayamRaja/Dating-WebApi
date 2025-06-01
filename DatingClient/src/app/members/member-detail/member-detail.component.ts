@@ -4,10 +4,12 @@ import { Member } from '../../_models/member';
 import { ActivatedRoute } from '@angular/router';
 import { TabsModule } from 'ngx-bootstrap/tabs'
 import { CarouselModule  } from 'ngx-bootstrap/carousel'
+import { DatePipe } from '@angular/common';
+import { TimeagoPipe } from '../../_pipes/timeago.pipe';
 @Component({
   selector: 'app-member-detail',
   standalone: true,
-  imports: [TabsModule, CarouselModule ],
+  imports: [TabsModule, CarouselModule, DatePipe, TimeagoPipe ],
   templateUrl: './member-detail.component.html',
   styleUrl: './member-detail.component.css'
 })

@@ -4,6 +4,9 @@ using API.Entities;
 using AutoMapper;
 using API.DTOs;
 using AutoMapper.QueryableExtensions;
+using API.Helper;
+using API.Extensions;
+using API.Enums;
 
 namespace API.Repository
 {
@@ -30,8 +33,7 @@ namespace API.Repository
         public async Task<AppUser?> GetByIdAsync(int id)
         {
             return await dataContext.Users
-                .Include(p=>p.Photos)
-                .FirstOrDefaultAsync(x=> x.Id == id);
+                .FindAsync(id);
         }
 
         public async Task<AppUser?> GetByUserNameAsync(string userName)
@@ -47,11 +49,29 @@ namespace API.Repository
             await dataContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<MemberDTO>> GetMemberAll()
+        public async Task<PagedList<MemberDTO>> GetMemberAll(UserParam userParam)
         {
-            return await dataContext.Users
-                .ProjectTo<MemberDTO>(mapper.ConfigurationProvider)
-                .ToListAsync();
+            var query = dataContext.Users.AsQueryable();
+
+            query = query.Where(x => x.UserName != userParam.UserName);
+
+            if (userParam.Gender.HasValue && userParam.Gender.Value != Gender.All)
+            {
+                query = query.Where(x => x.Gender == (int)userParam.Gender.Value);
+            }
+
+            var minDate = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParam.MaxAge - 1));
+            var maxDate = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParam.MinAge));
+
+            query = query.Where(x => x.DateOfBirth >= minDate && x.DateOfBirth <= maxDate);
+
+            query = userParam.OrderBy switch
+            {
+                "created" => query.OrderByDescending(x => x.CreatedDateTime),
+                _ => query.OrderByDescending(x => x.LastActive)
+            };
+
+            return await PagedList<MemberDTO>.CreateAsync(query.ProjectTo<MemberDTO>(mapper.ConfigurationProvider), userParam.PageNumber, userParam.PageSize);
         }
 
         public async Task<MemberDTO?> GetMemberByUserNameAsync(string userName)

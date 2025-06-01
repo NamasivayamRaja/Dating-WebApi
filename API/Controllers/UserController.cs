@@ -1,6 +1,7 @@
 ﻿using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helper;
 using API.Interfaces;
 using API.Repository;
 using AutoMapper;
@@ -16,9 +17,13 @@ namespace API.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers([FromQuery] UserParam userParam)
         {
-            var users = await repository.GetMemberAll();
+            userParam.UserName = User.GetUserName();
+
+            var users = await repository.GetMemberAll(userParam);
+
+            Response.AddPaginationHeader(users);
 
             return Ok(users);
         }
