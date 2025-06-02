@@ -7,6 +7,7 @@ using AutoMapper.QueryableExtensions;
 using API.Helper;
 using API.Extensions;
 using API.Enums;
+using API.Repository.Interface;
 
 namespace API.Repository
 {

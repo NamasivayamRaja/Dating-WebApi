@@ -3,7 +3,7 @@ using API.Entities;
 using API.Helper;
 using API.Interfaces;
 
-namespace API.Repository
+namespace API.Repository.Interface
 {
     public interface IUserRepository<T> : IRepository<T>
     {

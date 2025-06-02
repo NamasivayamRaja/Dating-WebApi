@@ -3,6 +3,7 @@ using API.Entities;
 using API.Helper;
 using API.Interfaces;
 using API.Repository;
+using API.Repository.Interface;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ namespace API.Extensions
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository<AppUser>, UserRepository>();
+            services.AddScoped<ILikeRepository, LikeRepository>();
             services.AddScoped<LastActiveActionFilter>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IPhotoService, PhotoService>();

@@ -3,7 +3,7 @@ using API.Entities;
 using API.Extensions;
 using API.Helper;
 using API.Interfaces;
-using API.Repository;
+using API.Repository.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

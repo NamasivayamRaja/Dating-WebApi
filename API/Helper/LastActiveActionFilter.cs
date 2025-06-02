@@ -1,7 +1,7 @@
 ﻿using API.Entities;
 using API.Extensions;
 using API.Interfaces;
-using API.Repository;
+using API.Repository.Interface;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Helper
