@@ -2,11 +2,12 @@
 using API.DTOs;
 using API.Entities;
 using API.Helper;
+using API.Repository.Interface;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Repository.Interface
+namespace API.Repository
 {
     public class LikeRepository(DataContext context, IMapper mapper) : ILikeRepository
     {

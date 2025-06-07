@@ -16,6 +16,9 @@ namespace API.Helper
             CreateMap<string, DateOnly>().ConstructUsing(s=> DateOnly.Parse(s));
             CreateMap<RegisterDTO, AppUser>()
                 .ForMember(g=>g.Gender, o=> o.MapFrom(src=> src.Gender.FromString<Gender>() ?? 0));
+            CreateMap<Message, MessageDto>()
+                .ForMember(dto => dto.SenderPhotoUrl, o => o.MapFrom(s => s.Sender.Photos.FirstOrDefault(x => x.IsMain)!.Url))
+                .ForMember(dto => dto.RecipientPhotoUrl, o => o.MapFrom(s => s.Recipient.Photos.FirstOrDefault(x=>x.IsMain)!.Url));
         }
     }
 }

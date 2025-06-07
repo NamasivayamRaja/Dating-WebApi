@@ -1,14 +1,15 @@
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import { inject, Injectable, model, OnInit, signal } from '@angular/core';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { inject, Injectable, model, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Member } from '../_models/member';
-import { of, tap } from 'rxjs';
+import { of } from 'rxjs';
 import { Photo } from '../_models/Photo';
 import { PaginatedResult } from '../_models/paginated-result';
 import { Pagination } from '../_models/pagination';
 import { UserParams } from '../_models/user-params';
 import { AccountService } from './account-service.service';
 import { setPaginatedHeaderparams, setPaginatedResponse } from './_pagination-helper';
+import { Message } from '../_models/message';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,11 @@ export class MemberService {
   ResetUserParams() {
     this.userParams.set(new UserParams(this.user));
   }
+
+  getMessageThread(userName: string) {
+    return this.httpClient.get<Message[]>(this.baseUrl + 'messages/thread/' + userName);
+  }
+
 
   LoadMembers() {
     let cachedMembersResponse = this.memoryCache.get(Object.values(this.userParams()).join('-'));
@@ -49,13 +55,6 @@ export class MemberService {
           this.memoryCache.set(Object.values(this.userParams()).join('-'), response);
         }
       });
-  }
-
-  private setPaginatedResponse(response: HttpResponse<Member[]>) {
-    this.paginatedResult?.set({
-      items: response.body as Member[],
-      pagination: JSON.parse(response.headers.get('Pagination')!) as Pagination
-    });
   }
 
   LoadMember(userName: any) {

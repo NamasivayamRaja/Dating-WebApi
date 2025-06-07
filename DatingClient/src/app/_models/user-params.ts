@@ -10,6 +10,12 @@ export class UserParams extends Params {
 
     constructor(user: User | null) {
         super();
-        this.gender = user?.gender === Gender.Male ? Gender[Gender.Female] : Gender[Gender.Male];
+        if(user)
+        {
+            this.gender = user.gender == Gender.Male ? Gender[Gender.Female] : Gender[Gender.Male];
+        }      
+        else {
+            this.gender = Gender[Gender.All];
+        }  
     }
 }

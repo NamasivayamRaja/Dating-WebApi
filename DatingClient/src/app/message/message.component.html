@@ -1,1 +1,68 @@
-<p>message works!</p>
+<div class="container mt-3">
+    <div class="d-flex">
+        <div class="btn-group">
+            <button class="btn btn-primary" btnRadio="UnRead" name="container" [(ngModel)]="container" (click)="LoadMessages()">Unread</button>
+            <button class="btn btn-primary" btnRadio="Inbox" name="container" [(ngModel)]="container" (click)="LoadMessages()">Inbox</button>
+            <button class="btn btn-primary" btnRadio="Outbox" name="container" [(ngModel)]="container" (click)="LoadMessages()">Outbox</button>
+        </div>
+    </div>
+</div>
+
+@if(!messageService.paginatedResult()?.items || messageService.paginatedResult()?.items?.length == 0) {
+    <div class="alert alert-info mt-3">
+        <strong>No messages found.</strong> 
+        @if(container === 'UnRead') {
+            You have no unread messages.
+        } @else if(container === 'Inbox') {
+            Your inbox is empty.
+        } @else if(container === 'Outbox') {
+            You have no sent messages.
+        }
+    </div>
+}
+@else {
+    <table class="table table-hover mt-3" style="cursor: pointer;">
+        <thead>
+            <tr>
+                <th style="width: 40%;">Message</th>
+                <th style="width: 20%;">From / To</th>
+                <th style="width: 20%;">Sent / Received</th>
+                <th style="width: 20%;"></th>                
+            </tr>
+        </thead>
+        <tbody class="align-middle">
+            @for(message of messageService.paginatedResult()?.items; track message.id) {
+            <tr [routerLink]="getRoute(message)" [queryParams]="{tab: 'Messages'}">
+                <td>{{message.content}}</td>
+                <td>
+                    <div>
+                        <img [src]=" isInbox 
+                                            ? message.senderPhotoUrl 
+                                            : message.recipientPhotoUrl" class="rounded-circle" style="width: 30px; height: 30px;"
+                            alt="User Photo">
+                        <strong>{{isInbox
+                            ? message.senderUserName
+                            : message.recipientUserName}}</strong>
+                    </div>
+                </td>
+                <td>
+                    {{message.messageSent | timeago}}
+                </td>
+                <td (click)="$event.stopPropagation()"><button (click)="deleteMessage(message.id)" class="btn btn-danger">Delete</button></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if(messageService.paginatedResult()?.pagination && messageService.paginatedResult()?.pagination?.totalItems! > 0) {
+<div class="d-flex justify-content-center mt-3">
+    <pagination 
+    [boundaryLinks]="true" 
+    [totalItems]="messageService.paginatedResult()?.pagination!.totalItems"
+        [itemsPerPage]="messageService.paginatedResult()?.pagination!.itemsPerPage" 
+        [maxSize]="10"
+        [(ngModel)]="messageService.paginatedResult()?.pagination!.currentPage"
+        (pageChanged)="pageChange($event)"></pagination>
+</div>
+}
