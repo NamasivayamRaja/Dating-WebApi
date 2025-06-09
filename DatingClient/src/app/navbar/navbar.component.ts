@@ -6,11 +6,12 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccountService } from '../_services/account-service.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { HasRoleDirective } from '../_directives/has-role.directive';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [FormsModule, BsDropdownModule, TitleCasePipe,RouterLink, RouterLinkActive],
+  imports: [FormsModule, BsDropdownModule, TitleCasePipe,RouterLink, RouterLinkActive, HasRoleDirective],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })

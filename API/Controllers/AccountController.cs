@@ -12,7 +12,7 @@ using System.Text;
 
 namespace API.Controllers
 {
-    public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseController
+    public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper) : BaseController
     {
         [HttpPost]
         [Route("register")]
@@ -25,22 +25,18 @@ namespace API.Controllers
 
             if (await CheckUserNameExist(registerDTO.UserName)) { return BadRequest("User name already registered"); }
 
-            using HMACSHA512 hmac = new HMACSHA512();
-
             var user = mapper.Map<AppUser>(registerDTO);
 
             user.UserName = registerDTO.UserName.ToLower();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
-            user.PasswordSalt = hmac.Key;
 
-            context.Users.Add(user);
+            var result = await userManager.CreateAsync(user, registerDTO.Password);
 
-            await context.SaveChangesAsync();
+            if(!result.Succeeded) return BadRequest(result.Errors);
 
             return new UserDTO
             {
                 UserName = user.UserName,
-                Token = tokenService.CreateToken(user),
+                Token = await tokenService.CreateToken(user),
                 Gender = user.Gender.ToString(),
                 KnownAs = user.KnownAs,
             };
@@ -50,23 +46,20 @@ namespace API.Controllers
         [Route("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var user = await context.Users.Include(u=>u.Photos).FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName.ToLower());
+            var user = await userManager.Users.Include(u=>u.Photos)
+                .FirstOrDefaultAsync(u => u.NormalizedUserName == loginDTO.UserName.ToUpper());
 
-            if (user == null) { return Unauthorized("Invalid User"); }
+            if (user == null || user.UserName == null) { return Unauthorized("Invalid User"); }
 
-            using HMACSHA512 hmac = new HMACSHA512(user.PasswordSalt);
-
-            var computePassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
-
-            for (int i = 0; i < computePassword.Length; i++)
+            if (!await userManager.CheckPasswordAsync(user, loginDTO.Password))
             {
-                if (computePassword[i] != user.PasswordHash[i]) { return Unauthorized("Invalid Password"); }
+                return Unauthorized();
             }
 
             return new UserDTO
             {
                 UserName = user.UserName,
-                Token = tokenService.CreateToken(user),
+                Token = await tokenService.CreateToken(user),
                 PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain)?.Url,
                 Gender = user.Gender.ToString(),
                 KnownAs = user.KnownAs,
@@ -75,7 +68,7 @@ namespace API.Controllers
 
         private async Task<bool> CheckUserNameExist(string userName)
         {
-            return await context.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());
+            return await userManager.Users.AnyAsync(u => u.NormalizedUserName == userName.ToUpper());
         }
     }
 }

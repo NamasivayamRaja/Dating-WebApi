@@ -5,7 +5,6 @@ import { Member } from '../_models/member';
 import { of } from 'rxjs';
 import { Photo } from '../_models/Photo';
 import { PaginatedResult } from '../_models/paginated-result';
-import { Pagination } from '../_models/pagination';
 import { UserParams } from '../_models/user-params';
 import { AccountService } from './account-service.service';
 import { setPaginatedHeaderparams, setPaginatedResponse } from './_pagination-helper';

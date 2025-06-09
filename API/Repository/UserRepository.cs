@@ -60,6 +60,10 @@ namespace API.Repository
             {
                 query = query.Where(x => x.Gender == (int)userParam.Gender.Value);
             }
+            else
+            {
+                query = query.Where(x => x.Gender != (int)Gender.SystemUser);
+            }
 
             var minDate = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParam.MaxAge - 1));
             var maxDate = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParam.MinAge));

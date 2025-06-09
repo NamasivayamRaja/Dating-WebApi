@@ -9,7 +9,7 @@ import { errorInterceptor } from './_interceptors/error.interceptor';
 import { jwtInterceptor } from './_interceptors/jwt.interceptor';
 import { spinningInterceptor } from './_interceptors/spinning.interceptor';
 import { NgxSpinnerModule } from 'ngx-spinner';
-
+import { ModalModule } from 'ngx-bootstrap/modal'
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
@@ -19,6 +19,6 @@ export const appConfig: ApplicationConfig = {
       positionClass: 'toast-bottom-right',
       preventDuplicates: true
     }),
-    importProvidersFrom(NgxSpinnerModule)
+    importProvidersFrom(NgxSpinnerModule, ModalModule.forRoot())
   ]
 };
