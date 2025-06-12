@@ -5,6 +5,7 @@ using API.Interfaces;
 using API.Repository;
 using API.Repository.Interface;
 using API.Services;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
@@ -34,6 +35,20 @@ namespace API.Extensions
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IPhotoService, PhotoService>();
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
+
+            services.AddLogging(logging => {
+                logging.AddConsole();
+                logging.AddDebug();
+                logging.SetMinimumLevel(LogLevel.Debug); // Set to Debug for development
+            });
+
+            services.AddSignalR(options =>
+            {
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                options.EnableDetailedErrors = true;
+            });
+            services.AddSingleton<PresenceTracker>();
 
             return services;
 

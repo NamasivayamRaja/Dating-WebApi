@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { LikesService } from '../../_services/likes.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgClass } from '@angular/common';
+import { PresenceService } from '../../_services/presence.service';
 
 @Component({
   selector: 'app-member-card',
@@ -16,8 +17,11 @@ export class MemberCardComponent {
   private toasterService = inject(ToastrService);
   private likeService = inject(LikesService)
   member = input.required<Member>()
-  hasLike = computed(() => this.likeService.likeIds().includes(this.member().id));
+  private presenceService =  inject(PresenceService);
 
+  hasLike = computed(() => this.likeService.likeIds().includes(this.member().id));
+  isOnline = computed(()=> this.presenceService.onlineUsers().includes(this.member().userName));
+  
   toogleLikes() {
     this.likeService.toggleLike(this.member().id).subscribe({
       next: () => {

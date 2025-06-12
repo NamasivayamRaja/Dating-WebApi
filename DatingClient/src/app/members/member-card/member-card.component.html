@@ -14,7 +14,7 @@
         </ul>
     </div>
     <div class="card-body">
-        <h5 class="card-title text-center mb-1"> <i class="fa fa-user me-2"></i> {{member().knownAs}} 
+        <h5 class="card-title text-center mb-1"> <span [class.is-Online]="isOnline()"><i class="fa fa-user me-2"></i></span> {{member().knownAs}} 
             @if(hasLike()){
                 <i class="fa fa-heart text-danger"></i>
             }
