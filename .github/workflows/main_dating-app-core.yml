@@ -18,11 +18,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli@17
+
+      - name: Install deps and build angular app
+        run: |
+          cd DatingClient
+          npm install
+          ng build
+
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 'v8.0'
-
+          
       - name: Build with dotnet
         run: dotnet build API/API.csproj --configuration Release
 
