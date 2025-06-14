@@ -13,6 +13,5 @@ namespace API.Repository.Interface
         Task<IEnumerable<int>> GetUserLikeIdsAsync(int currentUserId);
         void AddLike(UserLike userLike);
         void DeleteLike(UserLike userLike);
-        Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

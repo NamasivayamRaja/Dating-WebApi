@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using API.Data;
+using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using API.Repository.Interface;
@@ -8,11 +9,11 @@ namespace API.Helper
 {
     public class LastActiveActionFilter : IAsyncActionFilter
     {
-        private readonly IUserRepository<AppUser> _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LastActiveActionFilter(IUserRepository<AppUser> repository)
+        public LastActiveActionFilter(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -22,12 +23,12 @@ namespace API.Helper
             if (context.HttpContext.User.Identity?.IsAuthenticated != true) return;
 
             var userId = context.HttpContext.User.GetUserId();
-            var user = await _repository.GetByIdAsync(userId);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
 
             if (user != null)
             {
                 user.LastActive = DateTime.UtcNow;
-                await _repository.UpdateAsync(user);
+                await _unitOfWork.Complete();
             }
         }
     }

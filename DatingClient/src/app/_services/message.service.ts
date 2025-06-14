@@ -21,9 +21,7 @@ messageThread = signal<Message[]>([]);
   createHubConnection(user: User, otherUserName: string){
     this.hubConnection = new HubConnectionBuilder()
                         .withUrl(this.hubUrl + 'message?user=' + otherUserName, {
-                          accessTokenFactory: () => user.token,
-                          transport: HttpTransportType.WebSockets,
-                          skipNegotiation:true
+                          accessTokenFactory: () => user.token
                         })
                         .withAutomaticReconnect()
                         .build();

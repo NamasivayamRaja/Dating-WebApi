@@ -2,6 +2,7 @@
 using API.Entities;
 using API.Extensions;
 using API.Helper;
+using API.Interfaces;
 using API.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Headers;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Authorize]
-    public class LikesController(ILikeRepository likeRepository) : BaseController
+    public class LikesController(IUnitOfWork unitOfWork) : BaseController
     {
         [HttpPost("{targetUserId:int}")]
         public async Task<ActionResult> ToggleLike(int targetUserId,
@@ -21,11 +22,11 @@ namespace API.Controllers
             if (sourceUserId == targetUserId)
                 return BadRequest("You cannot like yourself");
 
-            var userLike = await likeRepository.GetUserLike(sourceUserId, targetUserId);
+            var userLike = await unitOfWork.LikeRepository.GetUserLike(sourceUserId, targetUserId);
 
             if (userLike is not null)
             {
-                likeRepository.DeleteLike(userLike);
+                unitOfWork.LikeRepository.DeleteLike(userLike);
             }
             else
             {
@@ -34,10 +35,10 @@ namespace API.Controllers
                     SourceUserId = sourceUserId,
                     TargetUserId = targetUserId
                 };
-                likeRepository.AddLike(userLike);
+                unitOfWork.LikeRepository.AddLike(userLike);
             }
 
-            if (await likeRepository.SaveChangesAsync(cancellationToken))
+            if (await unitOfWork.Complete())
                 return Ok();
 
             return BadRequest("Failed to toggle like");
@@ -47,7 +48,7 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<int>>> GetCurrentUserLikeIds()
         {
             var currentUserId = User.GetUserId();
-            var likeIds = await likeRepository.GetUserLikeIdsAsync(currentUserId);
+            var likeIds = await unitOfWork.LikeRepository.GetUserLikeIdsAsync(currentUserId);
             return Ok(likeIds);
         }
 
@@ -57,7 +58,7 @@ namespace API.Controllers
             CancellationToken cancellationToken = default)
         {
             likesParam.UserId = User.GetUserId();
-            var likes = await likeRepository.GetUserLikesAsync(likesParam, cancellationToken);
+            var likes = await unitOfWork.LikeRepository.GetUserLikesAsync(likesParam, cancellationToken);
 
             Response.AddPaginationHeader(likes);
 

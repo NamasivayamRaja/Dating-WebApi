@@ -85,10 +85,5 @@ namespace API.Repository
                 .ProjectTo<MemberDTO>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(x => x.UserName == userName);
         }
-
-        public async Task<bool> SaveAllChangesAsync()
-        {
-            return await dataContext.SaveChangesAsync() > 0;
-        }
     }
 }

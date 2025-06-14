@@ -68,34 +68,27 @@ namespace API.Repository
 
         public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName)
         {
-            var messages = await dataContext.Messages
+            var query = dataContext.Messages
                     .Where(
                             x => x.RecipientUserName == currentUserName && x.RecipientDeleted == false && x.SenderUserName == recipientUserName ||
                             x.SenderUserName == currentUserName && x.SenderDeleted == false && x.RecipientUserName == recipientUserName
                           )
                     .OrderBy(x => x.MessageSent)
-                    .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
-                    .ToListAsync();
+                    .AsQueryable();
 
-            var unreadMessage = messages.Where(x => x.RecipientUserName == currentUserName && x.DateRead == null).ToList();
+            var unreadMessage = query.Where(x => x.RecipientUserName == currentUserName && x.DateRead == null).ToList();
 
             if (unreadMessage.Any())
             {
                 unreadMessage.ForEach(x => x.DateRead = DateTime.UtcNow);
-                await dataContext.SaveChangesAsync();
             }
 
-            return messages;
+            return await query.ProjectTo<MessageDto>(mapper.ConfigurationProvider).ToListAsync();
         }
 
         public void RemoveConnection(Connection connection)
         {
             dataContext.Connections.Remove(connection);
-        }
-
-        public async Task<bool> SaveAllChangeAsync()
-        {
-            return await dataContext.SaveChangesAsync() > 0;
         }
     }
 }

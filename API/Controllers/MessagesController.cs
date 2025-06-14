@@ -2,6 +2,7 @@
 using API.Entities;
 using API.Extensions;
 using API.Helper;
+using API.Interfaces;
 using API.Repository.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Authorize]
-    public class MessagesController(IMessageRepository messageRepository,
-        IUserRepository<AppUser> userRepository,
+    public class MessagesController(IUnitOfWork unitOfWork,
         IMapper mapper) : BaseController
     {
 
@@ -26,8 +26,8 @@ namespace API.Controllers
                 return BadRequest("You cannot message yourself");
             }
 
-            var sender = await userRepository.GetByUserNameAsync(userName);
-            var recipient = await userRepository.GetByUserNameAsync(createMessageDto.RecipientUserName);
+            var sender = await unitOfWork.UserRepository.GetByUserNameAsync(userName);
+            var recipient = await unitOfWork.UserRepository.GetByUserNameAsync(createMessageDto.RecipientUserName);
 
             if (recipient == null || sender == null) 
             {
@@ -43,9 +43,9 @@ namespace API.Controllers
                 RecipientUserName = createMessageDto.RecipientUserName,
             };
 
-            messageRepository.AddMessage(message);
+            unitOfWork.MessageRepository.AddMessage(message);
 
-            if (await messageRepository.SaveAllChangeAsync()) return Ok(mapper.Map<MessageDto>(message));
+            if (await unitOfWork.Complete()) return Ok(mapper.Map<MessageDto>(message));
 
             return BadRequest("Message failed to send");
         }
@@ -55,7 +55,7 @@ namespace API.Controllers
         {
             messageParams.UserName = User.GetUserName();
 
-            var messages = await messageRepository.GetMessageForUser(messageParams);
+            var messages = await unitOfWork.MessageRepository.GetMessageForUser(messageParams);
 
             Response.AddPaginationHeader(messages);
 
@@ -66,7 +66,7 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string recipientUserName)
         {
             var currentUserName = User.GetUserName();
-            var messages = await messageRepository.GetMessageThread(currentUserName, recipientUserName);
+            var messages = await unitOfWork.MessageRepository.GetMessageThread(currentUserName, recipientUserName);
             return Ok(messages);
         }
 
@@ -77,7 +77,7 @@ namespace API.Controllers
 
             if (userName == null) return BadRequest("User not found");
 
-            var message = await messageRepository.GetMessage(id);
+            var message = await unitOfWork.MessageRepository.GetMessage(id);
 
             if (message is null) return BadRequest("Message is not found");
 
@@ -89,10 +89,10 @@ namespace API.Controllers
 
             if(message is { SenderDeleted: true, RecipientDeleted: true })
             {
-                messageRepository.DeleteMessage(message);
+                unitOfWork.MessageRepository.DeleteMessage(message);
             }
 
-            if (await messageRepository.SaveAllChangeAsync()) return Ok();
+            if (await unitOfWork.Complete()) return Ok();
 
             return BadRequest("Message deleting is failed");
         }

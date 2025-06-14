@@ -10,6 +10,5 @@ namespace API.Repository.Interface
         Task<AppUser?> GetByUserNameAsync(string userName);
         Task<PagedList<MemberDTO>> GetMemberAll(UserParam userParam);
         Task<MemberDTO?> GetMemberByUserNameAsync(string userName);
-        Task<bool> SaveAllChangesAsync();
     }
 }

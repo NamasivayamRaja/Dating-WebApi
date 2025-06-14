@@ -67,10 +67,5 @@ namespace API.Repository
                     likesParam.PageSize
                 );
         }
-
-        public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-           return await context.SaveChangesAsync(cancellationToken) > 0;
-        }
     }
 }

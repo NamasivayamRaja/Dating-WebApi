@@ -44,13 +44,13 @@ namespace API.Data
                 .HasOne(l => l.SourceUser)
                 .WithMany(u => u.LikedUsers)
                 .HasForeignKey(l => l.SourceUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<UserLike>()
                 .HasOne(l => l.TargetUser)
                 .WithMany(l => l.LikedByUsers)
                 .HasForeignKey(l => l.TargetUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Message>()
                 .HasOne(r => r.Recipient)

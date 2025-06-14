@@ -5,7 +5,11 @@
             <p class="text-center">No messages found.</p>
         }
         @else {
-           <ul class="chat">
+           <ul 
+                class="chat"
+                #scrollMe
+                style="overflow: scroll; max-height: 60vh; scroll-behavior: smooth;"
+           >
              @for(message of messageService.messageThread(); track message.id) {
                 <li>
                     <div>

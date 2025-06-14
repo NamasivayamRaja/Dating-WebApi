@@ -12,7 +12,7 @@ using System.Security.Claims;
 namespace API.Controllers
 {
     [Authorize]
-    public class UserController(IUserRepository<AppUser> repository, IMapper mapper, IPhotoService photoService
+    public class UserController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService
         ) : BaseController
     {
 
@@ -21,7 +21,7 @@ namespace API.Controllers
         {
             userParam.UserName = User.GetUserName();
 
-            var users = await repository.GetMemberAll(userParam);
+            var users = await unitOfWork.UserRepository.GetMemberAll(userParam);
 
             Response.AddPaginationHeader(users);
 
@@ -31,7 +31,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MemberDTO>> GetUserById(int id)
         {
-            var user = await repository.GetByIdAsync(id);
+            var user = await unitOfWork.UserRepository.GetByIdAsync(id);
 
             if (user == null) 
             {
@@ -46,7 +46,7 @@ namespace API.Controllers
         [HttpGet("userName/{userName}")] // api/users/raja
         public async Task<ActionResult<MemberDTO>> GetUserByName(string userName)
         {
-            var user = await repository.GetMemberByUserNameAsync(userName);
+            var user = await unitOfWork.UserRepository.GetMemberByUserNameAsync(userName);
 
             if (user == null)
             {
@@ -61,13 +61,13 @@ namespace API.Controllers
         {
             var userName = User.GetUserName();
             
-            var user = await repository.GetByUserNameAsync(userName);
+            var user = await unitOfWork.UserRepository.GetByUserNameAsync(userName);
             
             if (user == null) return BadRequest("User profile not found");
 
             mapper.Map(memberUpdateDTO, user);
 
-            if (await repository.SaveAllChangesAsync()) return NoContent();
+            if (await unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Update Request failed");
         }
@@ -77,7 +77,7 @@ namespace API.Controllers
         {
             var userName = User.GetUserName();
 
-            var user = await repository.GetByUserNameAsync(userName);
+            var user = await unitOfWork.UserRepository.GetByUserNameAsync(userName);
 
             if (user == null) return BadRequest("User profile not found");
 
@@ -97,7 +97,7 @@ namespace API.Controllers
 
             user.Photos.Add(photo);
 
-            if (await repository.SaveAllChangesAsync())
+            if (await unitOfWork.Complete())
                 return CreatedAtAction(nameof(GetUserByName), new { userName = userName }, mapper.Map<PhotoDTO>(photo));
 
             return BadRequest("Photo upload failed");
@@ -106,7 +106,7 @@ namespace API.Controllers
         [HttpPut("set-main-photo/{photoId:int}")]
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
-            var user = await repository.GetByUserNameAsync(User.GetUserName());
+            var user = await unitOfWork.UserRepository.GetByUserNameAsync(User.GetUserName());
 
             if (user is null) return BadRequest("User not found");
 
@@ -120,7 +120,7 @@ namespace API.Controllers
 
             photo.IsMain = true;
 
-            if (await repository.SaveAllChangesAsync()) return NoContent();
+            if (await unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Problem with setting the main photo");
         }
@@ -128,7 +128,7 @@ namespace API.Controllers
         [HttpDelete("delete-photo/{photoId:int}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
-            var user = await repository.GetByUserNameAsync(User.GetUserName());
+            var user = await unitOfWork.UserRepository.GetByUserNameAsync(User.GetUserName());
 
             if (user is null) return BadRequest("Could not found the user!");
 
@@ -140,7 +140,7 @@ namespace API.Controllers
 
             user.Photos.Remove(photo);
 
-            if(await repository.SaveAllChangesAsync()) { return NoContent(); }
+            if(await unitOfWork.Complete()) { return NoContent(); }
 
             return BadRequest("Problem occurred while deleting!!");
         }

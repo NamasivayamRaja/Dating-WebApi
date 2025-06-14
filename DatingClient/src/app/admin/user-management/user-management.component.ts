@@ -34,7 +34,7 @@ export class UserManagementComponent implements OnInit {
       }
     }
     this.bsModalRef = this.bsModalService.show(RolesModalComponent, intialState);
-    this.bsModalRef.onHide?.subscribe({
+    this.bsModalRef.onHidden?.subscribe({
       next: () =>
         {
           if(this.bsModalRef.content && this.bsModalRef.content.rolesUpdated){
